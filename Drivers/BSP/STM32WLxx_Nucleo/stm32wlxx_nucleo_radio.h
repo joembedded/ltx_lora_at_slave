@@ -13,6 +13,8 @@
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
+  * ---JoEmbedded--
+  * Ca. Z.99: Definitionen fuer RAK-PINS definiert
   ******************************************************************************
   */
 
@@ -95,6 +97,16 @@ typedef enum
 /** @defgroup STM32WLXX_NUCLEO_RADIO_LOW_LEVEL_RFSWITCH RADIO LOW LEVEL RF SWITCH Constants
   * @{
   */
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+  #define RF_SW_CTRL1_PIN                          GPIO_PIN_0
+  #define RF_SW_CTRL1_GPIO_PORT                    GPIOA
+  #define RF_SW_CTRL1_GPIO_CLK_ENABLE()            __HAL_RCC_GPIOA_CLK_ENABLE()
+  #define RF_SW_CTRL1_GPIO_CLK_DISABLE()           __HAL_RCC_GPIOA_CLK_DISABLE()
+  #define RF_SW_CTRL2_PIN                          GPIO_PIN_1
+  #define RF_SW_CTRL2_GPIO_PORT                    GPIOA
+  #define RF_SW_CTRL2_GPIO_CLK_ENABLE()            __HAL_RCC_GPIOA_CLK_ENABLE()
+  #define RF_SW_CTRL2_GPIO_CLK_DISABLE()           __HAL_RCC_GPIOA_CLK_DISABLE()
+#else
 
 #define RF_SW_CTRL3_PIN                          GPIO_PIN_3
 #define RF_SW_CTRL3_GPIO_PORT                    GPIOC
@@ -115,6 +127,9 @@ typedef enum
 #define RF_TCXO_VCC_GPIO_PORT                    GPIOB
 #define RF_TCXO_VCC_CLK_ENABLE()                 __HAL_RCC_GPIOB_CLK_ENABLE()
 #define RF_TCXO_VCC_CLK_DISABLE()                __HAL_RCC_GPIOB_CLK_DISABLE()
+
+#endif
+
 /**
  * @}
  */

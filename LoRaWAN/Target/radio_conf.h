@@ -14,6 +14,12 @@
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
+  * ---JoEmbedded--
+  * Modifiziert fuer RAK3172LP-SIP und RAK3172 von JW / 24.10.2025
+  * Problem: Genauer TCXO auf dem Modul unbekannt! Mit 3V waere eigtl. 3.2V VDD minimal
+  * noetig. Dazu keine genaue Aussage vom Modulhersteller zu bekommen, aber anscheinend
+  * ist VDD der RAK-Module VDD = 1.8-3.6V. Aus Sourcen der RUI3 (GitHub)
+  *
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -35,7 +41,7 @@ extern "C" {
 #include "utilities_def.h"  /* low layer api (bsp) */
 #include "sys_debug.h"
 /* USER CODE BEGIN include */
-
+#include "device.h" // def. opt. RAK3172
 /* USER CODE END include */
 
 /* Exported types ------------------------------------------------------------*/
@@ -92,6 +98,11 @@ extern "C" {
 #define DCDC_ENABLE                 ( 1UL )
 
 /* USER CODE BEGIN EC */
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+	#undef TCXO_CTRL_VOLTAGE
+	#define TCXO_CTRL_VOLTAGE           TCXO_CTRL_3_0V
+#endif
+
 /**
   * @brief disable the Sigfox radio modulation
   * @note enabled by default

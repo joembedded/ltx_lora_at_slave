@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "device.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,18 +60,60 @@ void Error_Handler(void);
 #define RTC_N_PREDIV_S 10
 #define RTC_PREDIV_S ((1<<RTC_N_PREDIV_S)-1)
 #define RTC_PREDIV_A ((1<<(15-RTC_N_PREDIV_S))-1)
+
 #define LED_BLUE_Pin GPIO_PIN_15
 #define LED_BLUE_GPIO_Port GPIOB
+
 #define LED_GREEN_Pin GPIO_PIN_9
 #define LED_GREEN_GPIO_Port GPIOB
+
 #define LED_RED_Pin GPIO_PIN_11
 #define LED_RED_GPIO_Port GPIOB
+
 #define USARTx_RX_Pin GPIO_PIN_3
 #define USARTx_RX_GPIO_Port GPIOA
 #define USARTx_TX_Pin GPIO_PIN_2
 #define USARTx_TX_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+// Apassung an unterschiedliche LEDs
+// erstmal vergessen
+#undef LED_BLUE_Pin
+#undef LED_BLUE_GPIO_Port
+#undef LED_GREEN_Pin
+#undef LED_GREEN_GPIO_Port
+#undef LED_RED_Pin
+#undef LED_RED_GPIO_Port
+
+// aus device.h
+#ifdef DLED_RED // Nucleo
+ #if DLED_RED==211  // PB11
+  #define LED_RED_Pin GPIO_PIN_11
+  #define LED_RED_GPIO_Port GPIOB
+ #endif
+#endif
+
+#ifdef DLED_GREEN // Nucleo
+ #if DLED_GREEN==209 // PB9
+  #define LED_GREEN_Pin GPIO_PIN_9
+  #define LED_GREEN_GPIO_Port GPIOB
+ #endif
+#endif
+
+#ifdef DLED_BLUE // Nucleo
+ #if DLED_BLUE==215 // PB11
+  #define LED_BLUE_Pin GPIO_PIN_15
+  #define LED_BLUE_GPIO_Port GPIOB
+ #endif
+#endif
+
+#ifdef PLED_RED // RAK3172(LP)-SIP-Testmodul-invers
+ #if PLED_RED==104  // PA4
+  #define LED_RED_Pin GPIO_PIN_4
+  #define LED_RED_GPIO_Port GPIOA
+ #endif
+#endif
+
 
 /* USER CODE END Private defines */
 

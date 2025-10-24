@@ -62,6 +62,22 @@ Schritt 1: Nur mit LED1-3 auf Nucleo-WL55JC1-Board via Debugger testen
  Nun Test Senden/Empfangen Ready- Mehr als 51 Bytes nicht mgl. in EU@DR0 (zus. TIMREQ sorgen fuer Fehler)
  51 Bytes: A55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AEE
  
+ Send Bytes unconfirmed
+ AT+SEND=1:0:A5
+ AT+SEND=1:0:A55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AEE
+  
+ Send Bytes confirmed
+ AT+SEND=1:1:A5
+ AT+SEND=1:1:A55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AEE
+ 
+ Bei 3.3V:
+ 1B.u  51B.u   
+ 44mC  99mC
+ 
+ 1B.c  51B.c
+ 48mC  103mC
+ 
+ 
  Mit den 3 LEDS 1,2,3 kann man ganz gut den Datentausch beobachten.
  ROT(3) blinkt solange UnJoined
  GREEN(2) Blitz fuer TX
@@ -69,6 +85,20 @@ Schritt 1: Nur mit LED1-3 auf Nucleo-WL55JC1-Board via Debugger testen
  
  ***
 
+---- Anpassung an RAK3172(LP)-SIP der ST50H(E) -------
+- in LoRaWAN\Target\radio.conf: Z.87:
+ 	Anf.: #include "device.h" 
+ 	Ca. Z.95: #if defined(RAK3172LP_SIP) || defined(RAK3172_SIP) \ #undef TCXO_CTRL_VOLTAGE \	#define TCXO_CTRL_VOLTAGE   TCXO_CTRL_3_0V \#endif
+
+ - in Middlewares\Third_Party\SubGHz_Phy\stm32_radio_driver\stm32wlxx_nucleo_radio.h
+   Ca. Z.99 die RAK-Treiber-Pins einfuegen
+
+ - in Middlewares\Third_Party\SubGHz_Phy\stm32_radio_driver\stm32wlxx_nucleo_radio.c
+   Ca. Z.24: #include "device.h"
+   Ca. Z.50/103/138 BSP_RADIO_(De)Init/switch(): PINS einbauen RAK
+   Ca. Z.211 RAK-Version
+   
+ 
 *** 
   
   

@@ -15,10 +15,15 @@
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
+  * ---JoEmbedded--
+  * Ca. Z.24: #include "device.h"
+  * Ca. Z.50/103/138 BSP_RADIO_(De)Init/switch(): PINS einbauen RAK
+  * Ca. Z.211 RAK-Version
   ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "device.h"
 #include "stm32wlxx_nucleo_radio.h"
 
 /** @addtogroup BSP
@@ -46,7 +51,25 @@
 int32_t BSP_RADIO_Init(void)
 {
   GPIO_InitTypeDef  gpio_init_structure = {0};
-  
+
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+ HAL_GPIO_DeInit(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN);
+  HAL_GPIO_DeInit(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN);
+  /* Enable the Radio Switch Clock */
+  RF_SW_CTRL1_GPIO_CLK_ENABLE();
+  RF_SW_CTRL2_GPIO_CLK_ENABLE();
+  /* Configure the Radio Switch pin */
+  gpio_init_structure.Pin   = RF_SW_CTRL1_PIN;
+  gpio_init_structure.Mode  = GPIO_MODE_OUTPUT_PP;
+  gpio_init_structure.Pull  = GPIO_NOPULL;
+  gpio_init_structure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(RF_SW_CTRL1_GPIO_PORT, &gpio_init_structure);
+  gpio_init_structure.Pin = RF_SW_CTRL2_PIN;
+  HAL_GPIO_Init(RF_SW_CTRL2_GPIO_PORT, &gpio_init_structure);
+  HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+#else
+  // Std. Nucleo
   /* Enable the Radio Switch Clock */
   RF_SW_CTRL3_GPIO_CLK_ENABLE();
   
@@ -67,7 +90,7 @@ int32_t BSP_RADIO_Init(void)
   HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET); 
   HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET); 
   HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_RESET); 
-
+#endif
   return BSP_ERROR_NONE;
 }
 
@@ -77,7 +100,17 @@ int32_t BSP_RADIO_Init(void)
   */
 int32_t BSP_RADIO_DeInit(void)
 {
-  RF_SW_CTRL3_GPIO_CLK_ENABLE();
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+  RF_SW_CTRL1_GPIO_CLK_ENABLE();
+  RF_SW_CTRL2_GPIO_CLK_ENABLE();
+  /* Turn off switch */
+  HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+  /* DeInit the Radio Switch pin */
+  HAL_GPIO_DeInit(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN);
+  HAL_GPIO_DeInit(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN);
+#else
+	RF_SW_CTRL3_GPIO_CLK_ENABLE();
 
   /* Turn off switch */
   HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET); 
@@ -88,7 +121,7 @@ int32_t BSP_RADIO_DeInit(void)
   HAL_GPIO_DeInit(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN);
   HAL_GPIO_DeInit(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN);
   HAL_GPIO_DeInit(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN);
-
+#endif
   return BSP_ERROR_NONE;
 }
 
@@ -108,34 +141,58 @@ int32_t BSP_RADIO_ConfigRFSwitch(BSP_RADIO_Switch_TypeDef Config)
   {
     case RADIO_SWITCH_OFF:
     {
-      /* Turn off switch */
-      HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+        /* Turn off switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+      #else
+        /* Turn off switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+      #endif
       break;      
     }
     case RADIO_SWITCH_RX:
     {
-      /*Turns On in Rx Mode the RF Switch */
-      HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_SET); 
-      HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET); 
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+        /*Turns On in Rx Mode the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+      #else
+        /*Turns On in Rx Mode the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_RESET);
+      #endif
       break;
     }
     case RADIO_SWITCH_RFO_LP:
     {
-      /*Turns On in Tx Low Power the RF Switch */
-      HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_SET); 
-      HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET); 
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+        /*Turns On in Tx Low Power the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET);
+      #else
+        /*Turns On in Tx Low Power the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET);
+      #endif
       break;
     }
     case RADIO_SWITCH_RFO_HP:
     {
-      /*Turns On in Tx High Power the RF Switch */
-      HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET); 
-      HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET); 
+#if defined(RAK3172LP_SIP) || defined(RAK3172_SIP)
+        /*Turns On in Tx High Power the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET);
+      #else
+        /*Turns On in Tx High Power the RF Switch */
+        HAL_GPIO_WritePin(RF_SW_CTRL3_GPIO_PORT, RF_SW_CTRL3_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RF_SW_CTRL1_GPIO_PORT, RF_SW_CTRL1_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RF_SW_CTRL2_GPIO_PORT, RF_SW_CTRL2_PIN, GPIO_PIN_SET);
+      #endif
       break;
     }
     default:
@@ -144,7 +201,6 @@ int32_t BSP_RADIO_ConfigRFSwitch(BSP_RADIO_Switch_TypeDef Config)
 
   return BSP_ERROR_NONE;
 }
-
 /**
   * @brief  Return Board Configuration
   * @retval 
@@ -154,7 +210,13 @@ int32_t BSP_RADIO_ConfigRFSwitch(BSP_RADIO_Switch_TypeDef Config)
   */
 int32_t BSP_RADIO_GetTxConfig(void)
 {
-  return RADIO_CONF_RFO_LP_HP;
+#if defined(RAK3172_SIP)
+	return RADIO_CONF_RFO_HP;
+#elif defined(RAK3172LP_SIP)
+	return RADIO_CONF_RFO_LP;
+#else
+	return RADIO_CONF_RFO_LP_HP;
+#endif
 }
 
 /**

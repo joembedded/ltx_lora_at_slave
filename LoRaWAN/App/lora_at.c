@@ -352,7 +352,7 @@ void AT_event_OnStoreContextRequest(void *nvm, uint32_t nvm_size)
   /* store nvm in flash */
   if (FLASH_IF_Erase(LORAWAN_NVM_BASE_ADDRESS, FLASH_PAGE_SIZE) == FLASH_IF_OK)
   {
-    FLASH_IF_Write(LORAWAN_NVM_BASE_ADDRESS, (const void *)nvm, nvm_size);
+	  FLASH_IF_Write(LORAWAN_NVM_BASE_ADDRESS, (const void *)nvm, nvm_size);
   }
 }
 
