@@ -1,0 +1,79 @@
+X_Docu_Jo.txt, Start: 22.10.2025
+----------------------------------------------------------------------
+
+- Workspace in STM32CubeIDE anlegen, z.B. /st_projects/osx_lora
+- In IDE: import Project from existing example (STM32WLE5CCU6 => AT-Slave für Nucleo-C1-Board)
+- Wird als /LoRaWAN_AT_SLave angelegt
+- ProjektRoot -> Properties -> Encoding ISO8859 oder US_ASCII
+- File X_Docu_Jo.txt mit Root (X wg. Sortierung)
+- Test-Compile (1Waring "Permissions" ist OK)
+
+Schritt 1: Nur mit LED1-3 auf Nucleo-WL55JC1-Board via Debugger testen
+----------------------------------------------------------------------
+- MX: .ioc starten
+-  GPIO: BUTx und PROBEx entfernen
+-  Middleware/Lorawan: ProbeLines disable, nur Region EU868 enable
+-  DBG auf SerialWire
+-  ProjectManager: Heap/Stack 0x400/0xA00
+-  Close MX und generiere Code
+
+- in /osx_lora_at/LoRaWAN/Target/radio_conf.h aendern auf undefine, ca. Z.110:  
+  #define DBG_GPIO_RADIO_RX(set_rst)
+  #define DBG_GPIO_RADIO_TX(set_rst)
+  
+ - Nun auf Nucleo-WL55JC1-Board Debugbar:
+ - UART 9600 Bd
+ - ToKnow: CPU steht im Projekt auf *STM32WL55JCIx*
+ 
+ -Diese Board-Default-Keys, LoRaWan 1.0.4:
+ DEUI       00:80:E1:15:05:31:06:08  (=MAC)
+ APPEUI		01:01:01:01:01:01:01:01
+ NWKKEY  	C0:DE:42:CA:FE:BA:BE:AE:51:FA:CA:DE:FA:CA:DE:51
+ (APPKEY ist wohl der falsche beu V1.0.4?)
+ 
+ - Beim ersten Mal Join scheint es manchmal schief zu gehen?
+ - TIMERQ-Piggypack bei sehr langen Payloads scheint Probleme zu machen. Evtl. lieber sparat holen? 
+ 
+ Reset:
+ ATZ
+ 
+ 14dBm TX: => Hameg 12.87dBm
+ AT+TCONF=868500000:14:4:12:4/5:0:0:1:16:25000:2:3
+ AT+TTX=4
+   
+ 5dBm TX: => Hameg 4.96dBm
+ AT+TCONF=868500000:5:4:12:4/5:0:0:1:16:25000:2:3
+ AT+TTX=4   
+ 
+ ATZ
+ AT+ADR=0
+ AT+CS
+ AT+DEUI=?
+  00:80:E1:15:05:31:06:08
+ AT+APPEUI=?
+  01:01:01:01:01:01:01:01
+ AT+APPKEY=?
+  2B:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:3C
+ 
+ Maximaldebug, wird beides nicht gespeichert:
+  AT+DCS=0   =>  DutyCycleCheck deaktivieren 
+  AT+VL=3   => Verbose (Def. 2)
+ 
+ Nun Test Senden/Empfangen Ready- Mehr als 51 Bytes nicht mgl. in EU@DR0 (zus. TIMREQ sorgen fuer Fehler)
+ 51 Bytes: A55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AA55AEE
+ 
+ Mit den 3 LEDS 1,2,3 kann man ganz gut den Datentausch beobachten.
+ ROT(3) blinkt solange UnJoined
+ GREEN(2) Blitz fuer TX
+ BLUE(1) Blitzt fuer RX
+ 
+ ***
+
+*** 
+  
+  
+  
+
+
+
+
