@@ -97,7 +97,7 @@ void SYS_DeInitMeasurement(void)
 int16_t SYS_GetTemperatureLevel(void)
 {
   /* USER CODE BEGIN SYS_GetTemperatureLevel_1 */
-
+	// Liefert aufm, STM32 kein gutes Ergebnis, sehr ungenau!
   /* USER CODE END SYS_GetTemperatureLevel_1 */
   __IO int16_t temperatureDegreeC = 0;
   uint32_t measuredLevel = 0;

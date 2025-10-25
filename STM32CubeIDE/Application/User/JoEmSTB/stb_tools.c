@@ -9,6 +9,7 @@
 //Allg
 #include "platform.h"
 #include "sys_app.h"
+#include "adc_if.h"
 #include "utilities_def.h"
 
 #include "iwdg.h"
@@ -120,6 +121,7 @@ void joEmWatchdogService(void) { // Only Watchdog
 #endif
 }
 
+
 void joEmSetup(void) {
 #ifdef LED_GREEN_Pin
 	UTIL_TIMER_Create(&TxLedTimer, LED_ON_TIME_RX, UTIL_TIMER_ONESHOT,
@@ -141,8 +143,7 @@ void joEmSetup(void) {
 			UTIL_TIMER_PERIODIC, joEmPeriodicTimerCb, NULL);
 	UTIL_TIMER_Start(&joem_periodic_timer);
 
-	APP_PRINTF(
-			"\r\n--- "DEVICE_NAME" V%u.%u Type:%u ("__DATE__ " " __TIME__") "COPYRIGHT" ---\r\n",
+	APP_PRINTF("\r\n--- "DEVICE_NAME" V%u.%u Type:%u ("__DATE__ " " __TIME__") "COPYRIGHT" ---\r\n",
 			DEVICE_FIRMWARE/10, DEVICE_FIRMWARE%10, DEVICE_TYP);
 #ifdef DEBUG
 	APP_PRINTF("*** DEBUG DEB.ENA.:%d ***\r\n", (uint8_t)DEBUGGER_ENABLED);
@@ -153,6 +154,7 @@ void joEmSetup(void) {
 #endif
 	// Und PeriodicTimer initial starten
 	joEmPeriodicTimerCb(NULL);
-
 }
+
+//***
 

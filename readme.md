@@ -22,4 +22,4 @@ Generate platform variants using STM32CubeMX.
 - Multi-platform support
 
 ## Version
-**v0.1b** - Initial beta release
+**v0.2** - 26.10.2025

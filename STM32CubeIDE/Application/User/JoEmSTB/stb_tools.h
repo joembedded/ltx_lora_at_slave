@@ -10,7 +10,9 @@
 
 #define LED_ON_TIME_RX 500	// BLUE
 #define LED_ON_TIME_TX 500	// GREEN
-#define LED_ON_TIME_SIG 500	// RED Signal
+#define LED_ON_TIME_SIG 500	// RED Signal Std.
+#define LED_ON_TIME_SIGF 200	// RED Signal Kurz
+#define LED_ON_TIME_SIGERR 2000 // ERROR
 #define LED_ON_TIME_NET 1	// RED flash
 
 extern uint32_t stb_now_runtime_sec;	// RunTimeCounter

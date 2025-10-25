@@ -202,7 +202,7 @@ void AT_event_join(LmHandlerJoinParams_t *params)
 	  }
 	  else
 	  {
-		joEmTriggerRedLedWd(2000);	// LONG RED
+		joEmTriggerRedLedWd(LED_ON_TIME_SIGERR);	// LONG RED
 	    AT_PRINTF("+EVT:JOIN FAILED\r\n");
 	    // stb_join_flag = false; // Implizit bereits
 	  }
@@ -365,7 +365,7 @@ void AT_event_OnRestoreContextRequest(void *nvm, uint32_t nvm_size)
 ATEerror_t AT_version_get(const char *param)
 {
   /* USER CODE BEGIN AT_version_get_1 */
-
+// Bei LORAMAC_HANDLER_L2_VERSION wird geliefert, was eingestellt ist, also z.B. aktuell die V1.0.4 (10/2025)
   /* USER CODE END AT_version_get_1 */
   uint32_t feature_version;
 
@@ -519,6 +519,8 @@ ATEerror_t AT_restore_factory_settings(const char *param)
 ATEerror_t AT_store_context(const char *param)
 {
   /* USER CODE BEGIN AT_store_context_1 */
+
+	//**todo Min-SPannung gg VDD_MIN+300 pruefen
 
   /* USER CODE END AT_store_context_1 */
   LmHandlerErrorStatus_t status = LORAMAC_HANDLER_ERROR;
@@ -870,7 +872,11 @@ ATEerror_t AT_NetworkID_set(const char *param)
 ATEerror_t AT_Join(const char *param)
 {
   /* USER CODE BEGIN AT_Join_1 */
-  if(param[0]=='0' || param[0]=='1') stb_join_flag=false;
+  if(param[0]=='0' || param[0]=='1') {
+	  stb_join_flag=false;
+	  joEmTriggerRedLedWd(LED_ON_TIME_SIGF);	// Short RGB Flashen
+  }
+
   /* USER CODE END AT_Join_1 */
   switch (param[0])
   {
@@ -909,7 +915,8 @@ ATEerror_t AT_Link_Check(const char *param)
 ATEerror_t AT_Send(const char *param)
 {
   /* USER CODE BEGIN AT_Send_1 */
-
+	// Wenn FrameCounter nicht validiert wird, geht Senden mit gespeichertem Context auch ohne JOIN.
+  joEmTriggerRedLedWd(LED_ON_TIME_SIGF);	// Short RGB Flashen
   /* USER CODE END AT_Send_1 */
   const char *buf = param;
   uint16_t bufSize = strlen(param);
@@ -2403,7 +2410,7 @@ static int32_t isHex(char Char)
 }
 
 /* USER CODE BEGIN PrFD */
-
+// Von Jo engebaut AT+TIMEREQ
 ATEerror_t AT_Time_Request(const char *param)
 {
   if (LmHandlerDeviceTimeReq() != LORAMAC_HANDLER_SUCCESS)

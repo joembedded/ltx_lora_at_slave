@@ -21,9 +21,9 @@
 
 	//Workaround fuer Praeprozessor Port A=100, B:200, C:300 plus NR.
 	//Name LED_xxx schon vergeben... Dxx: Led gg. GND
-	//#define DLED_RED		211 // PB11
-	//#define DLED_GREEN	209 // PB9
-	//#define DLED_BLUE		215 // PB15
+	#define DLED_RED		211 // PB11
+	#define DLED_GREEN	209 // PB9
+	#define DLED_BLUE		215 // PB15
 
 	#define DEVICE_FIRMWARE	1
 

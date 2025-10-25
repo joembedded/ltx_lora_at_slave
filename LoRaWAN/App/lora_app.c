@@ -388,7 +388,9 @@ static void OnStoreContextRequest(void *nvm, uint32_t nvm_size)
   /* USER CODE BEGIN OnStoreContextRequest_1 */
   // Jo: Check Nonce: DevNonce (uint16_t) vom Node gesendet, JoinNonce (uint32_t) vom Server empfangen
   // *** TODO: *** Abspeichern der Nonces nach erfolgreichem JOIN und evtl. in NJS ausgeben
-  APP_LOG(TS_ON, VLEVEL_L, "%s : DevNonce = %u and JoinNonce %u\r\n", __func__, (*( LoRaMacNvmData_t * )nvm).Crypto.DevNonce, (*( LoRaMacNvmData_t * )nvm).Crypto.JoinNonce);
+  //               Noch Flash-Spannung pruefen! gg. VDD_MIN+300
+
+	APP_LOG(TS_ON, VLEVEL_H, "Store DevNonce:%u JoinNonce:%u\r\n",  (*( LoRaMacNvmData_t * )nvm).Crypto.DevNonce, (*( LoRaMacNvmData_t * )nvm).Crypto.JoinNonce);
   /* USER CODE END OnStoreContextRequest_1 */
   AT_event_OnStoreContextRequest(nvm, nvm_size);
   /* USER CODE BEGIN OnStoreContextRequest_Last */
@@ -399,12 +401,11 @@ static void OnStoreContextRequest(void *nvm, uint32_t nvm_size)
 static void OnRestoreContextRequest(void *nvm, uint32_t nvm_size)
 {
   /* USER CODE BEGIN OnRestoreContextRequest_1 */
- APP_LOG(TS_ON, VLEVEL_L, "%s : Old: DevNonce = %u and JoinNonce %u\r\n", __func__, (*( LoRaMacNvmData_t * )nvm).Crypto.DevNonce, (*( LoRaMacNvmData_t * )nvm).Crypto.JoinNonce);
 
   /* USER CODE END OnRestoreContextRequest_1 */
   AT_event_OnRestoreContextRequest(nvm, nvm_size);
   /* USER CODE BEGIN OnRestoreContextRequest_Last */
-  APP_LOG(TS_ON, VLEVEL_L, "%s : New: DevNonce = %u and JoinNonce %u\r\n", __func__, (*( LoRaMacNvmData_t * )nvm).Crypto.DevNonce, (*( LoRaMacNvmData_t * )nvm).Crypto.JoinNonce);
+  APP_LOG(TS_ON, VLEVEL_H, "Loaded DevNonce:%u JoinNonce:%u\r\n", (*( LoRaMacNvmData_t * )nvm).Crypto.DevNonce, (*( LoRaMacNvmData_t * )nvm).Crypto.JoinNonce);
 
   /* USER CODE END OnRestoreContextRequest_Last */
 }
